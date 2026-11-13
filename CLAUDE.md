@@ -4,7 +4,7 @@ Zachary is GM of the Chicago Blackhawks (CHI) in the FCHL, an online Hockey Lega
 
 Zachary is a developer. Keep answers short and decision-ready. The page is public to the whole league: only league-wide facts any GM could look up in the game go on it. Chicago's plans and notes live in Zachary's private workspace, not here.
 
-Status: first published Nov 12, 2026 and rebuilt the same day from the four saves through Nov 2, 2026 (repo github.com/ZacharyMichaud/fchl-hml27; Pages serves the `main` branch).
+Status: first published Nov 12, 2026 and rebuilt the same day from the four saves through Nov 2, 2026 (repo github.com/ZacharyMichaud/fchl-hml27; Pages serves the `main` branch). Rebuilt Nov 13, 2026 to show the overall the game shows, with the temporary streak or injury modifier (see Ratings in the PHL file); five players in NHL organizations carry one on the Nov 2 save.
 
 ## How it relates to the PHL site
 
