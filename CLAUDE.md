@@ -4,7 +4,7 @@ Zachary is GM of the Chicago Blackhawks (CHI) in the FCHL, an online Hockey Lega
 
 Zachary is a developer. Keep answers short and decision-ready. The page is public to the whole league: only league-wide facts any GM could look up in the game go on it. Chicago's plans and notes live in Zachary's private workspace, not here.
 
-Status: first published Nov 12, 2026 and rebuilt the same day from the four saves through Nov 2, 2026 (repo github.com/ZacharyMichaud/fchl-hml27; Pages serves the `main` branch). Rebuilt Nov 13, 2026 to show the overall the game shows, with the temporary streak or injury modifier (see Ratings in the PHL file); five players in NHL organizations carry one on the Nov 2 save.
+Status: first published Nov 12, 2026 and rebuilt the same day from the four saves through Nov 2, 2026 (repo github.com/ZacharyMichaud/fchl-hml27; Pages serves the `main` branch). Rebuilt Nov 13, 2026 to show the overall the game shows, with the temporary streak or injury modifier (see Ratings in the PHL file); five players in NHL organizations carry one on the Nov 2 save. Rebuilt again the same day so Team value prices rating changes (see Team value).
 
 ## How it relates to the PHL site
 
@@ -50,6 +50,7 @@ From the four saves through Nov 2, 2026 the build gives 3 combined deals, 80 dea
 
 - One period so far, "2026-27 season": the preseason and the regular season to date. The Nov 2 save caches only 74 of 2,190 player values, so most of that save's values are copied or estimated, as the page's own table shows.
 - The first save already holds trades #3832 to #3857, so they sit outside the value grades; the trade report cards cover them.
+- A player whose rating changed since his last stored value keeps that value, moved by the game's value per overall point at his level. The value tool measures that rate from players stored at two overalls on the same contract. This league's saves can't measure it yet (9 such pairs after the Nov 2 tick), so since Nov 13, 2026 the tool uses the PHL's measurement at every level this league can't measure (same game). Before that, the 289 players under NHL contract whose rating changed by the Nov 2 save kept their old value, so development since Oct 6 was missing from every grade (prospects without an NHL contract are valued by potential, not rating, so theirs don't move). Chicago went from C+ to B and Buffalo from B- to A; moves-only grades didn't change.
 
 ## Open
 
