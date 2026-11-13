@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FCHL standings</title>
+<meta name="description" content="Standings, shot share, luck and the playoff race in the league.">
+<style>
+  :root {
+    color-scheme: light dark;
+    --ice: #f2f6f9; --paper: #ffffff; --ink: #11203a; --ink-soft: #5b6b82; --line: #d6dfe8; --line-strong: #aebbcb;
+    --blue: #1d5fa6; --blue-soft: #dbe8f7; --red: #b4121c; --red-soft: #f8dcdc; --stamp: #b4121c; --hover: #e9f0f8;
+    --bar: #7f8ea3; --track: #e3eaf1;
+    --sans: "Helvetica Neue", Helvetica, Arial, "Segoe UI", Roboto, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) { :root {
+    --ice: #0e1726; --paper: #15213a; --ink: #edf2f8; --ink-soft: #9fb0c6; --line: #2a3850; --line-strong: #46587a;
+    --blue: #6aa6ee; --blue-soft: #1c3458; --red: #f0636b; --red-soft: #4b1f24; --stamp: #f0636b; --hover: #1d2d4a;
+    --bar: #5d7090; --track: #1f2c45;
+  } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ice); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.45; -webkit-text-size-adjust: 100%; }
+  a { color: var(--blue); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 16px 16px 48px; }
+  h1 { font-size: clamp(30px, 5vw, 46px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; margin: 0 0 8px; }
+  h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; margin: 0; }
+  h3 { font-size: 15px; font-weight: 700; margin: 22px 0 6px; }
+  p { margin: 0; max-width: 70ch; }
+  .lede { color: var(--ink-soft); font-size: 16px; }
+  .meta { color: var(--ink-soft); font-size: 13px; margin-top: 6px; }
+  section { margin-top: 40px; }
+  .head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; padding-bottom: 10px; border-bottom: 2px solid var(--ink); margin-bottom: 12px; }
+  .note { color: var(--ink-soft); font-size: 13px; }
+  .scroll { overflow: auto; max-height: 76vh; border-bottom: 1px solid var(--line); }
+  .scroll.tall { max-height: none; }
+  table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+  th, td { padding: 7px 10px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: middle; white-space: nowrap; }
+  th { position: sticky; top: 0; z-index: 1; background: var(--ice); color: var(--ink-soft); font-weight: 600; font-size: 13px; }
+  th.sortable { cursor: pointer; user-select: none; }
+  th.sortable:hover { color: var(--ink); }
+  th[aria-sort="ascending"]::after { content: " \2191"; } th[aria-sort="descending"]::after { content: " \2193"; }
+  .num, th.num { text-align: right; }
+  tr.pick { cursor: pointer; } tr.pick:hover td { background: var(--hover); }
+  tr.me td { background: var(--blue-soft); }
+  tr.cut td { border-bottom: 2px solid var(--ink-soft); }
+  tr.sub td { color: var(--ink-soft); font-size: 13px; font-weight: 600; background: var(--ice); padding-top: 12px; }
+  tr.sum td { font-weight: 700; border-top: 1px solid var(--line-strong); }
+  .sec { display: table-cell; }
+  @media (max-width: 760px) { .sec, .wide { display: none; } th, td { padding: 7px 6px; } }
+  .grade { display: inline-block; min-width: 2.2em; font-weight: 800; letter-spacing: 0.02em; }
+  .g-a, .g-b { color: var(--blue); } .g-d, .g-f { color: var(--red); } .g-x { color: var(--ink-soft); font-weight: 600; }
+  .up { color: var(--blue); } .down { color: var(--red); } .soft { color: var(--ink-soft); }
+  .team-head { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; }
+  .stamp { width: 112px; height: 112px; border: 4px solid var(--stamp); color: var(--stamp); border-radius: 50%; display: grid; place-items: center; font-size: 46px; font-weight: 900; letter-spacing: -0.02em; transform: rotate(-8deg); flex: none; }
+  .team-title h2 { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; }
+  .team-title .gm { color: var(--ink-soft); font-size: 15px; }
+  select, input[type="search"] { font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--line-strong); border-radius: 4px; padding: 6px 10px; max-width: 100%; }
+  .team-title select { margin-top: 10px; }
+  .figures { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); gap: 0 24px; margin: 22px 0 14px; border-top: 1px solid var(--line); }
+  .figures div { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .figures .l { color: var(--ink-soft); font-size: 13px; }
+  .figures .v { font-size: 26px; font-weight: 700; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+  .figures .s { color: var(--ink-soft); font-size: 13px; }
+  .tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-bottom: 10px; }
+  .tools input[type="search"] { width: min(100%, 22rem); }
+  .seg { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 4px; overflow: hidden; }
+  .seg button { font: inherit; font-size: 14px; color: var(--ink-soft); background: var(--paper); border: 0; border-right: 1px solid var(--line-strong); padding: 6px 12px; cursor: pointer; }
+  .seg button:last-child { border-right: 0; }
+  .seg button:hover { color: var(--ink); }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); font-weight: 600; }
+  .tag { display: inline-block; padding: 0 5px; border: 1px solid var(--line-strong); border-radius: 3px; color: var(--ink-soft); font-size: 11px; font-weight: 600; line-height: 16px; vertical-align: 1px; }
+  .pot { display: inline-block; padding: 0 6px; border-radius: 3px; font-size: 12px; font-weight: 700; line-height: 18px; vertical-align: 1px; white-space: nowrap; color: #fff; }
+  .pot.m0 { background: #2f6fd6; } .pot.m1 { background: #2b8a3e; } .pot.m2 { background: #e8890c; color: #2b1700; }
+  .pot.m3 { background: #d03b3b; } .pot.m4 { background: #7f1d1d; } .pot.m5 { background: #6f7a89; }
+  /* Bars: thin, rounded at the data end, on a quiet track. */
+  .meter { position: relative; display: inline-block; vertical-align: middle; width: 100%; min-width: 5rem; height: 8px; border-radius: 4px; background: var(--track); overflow: hidden; }
+  .meter i { position: absolute; top: 0; bottom: 0; left: 0; background: var(--bar); border-radius: 0 4px 4px 0; }
+  .meter i.blue { background: var(--blue); } .meter i.red { background: var(--red); }
+  .dbar { position: relative; display: inline-block; vertical-align: middle; width: 100%; min-width: 6rem; height: 8px; }
+  .dbar i { position: absolute; top: 0; bottom: 0; }
+  .dbar .pos { background: var(--blue); border-radius: 0 4px 4px 0; } .dbar .neg { background: var(--red); border-radius: 4px 0 0 4px; }
+  .dbar .zero { top: -3px; bottom: -3px; width: 1px; margin-left: -0.5px; background: var(--ink-soft); }
+  @media (forced-colors: active) { .meter i, .dbar .pos, .dbar .neg { background: CanvasText; } }
+  .chart { position: relative; }
+  .chart svg { display: block; width: 100%; height: auto; }
+  .tip { position: absolute; pointer-events: none; background: var(--paper); color: var(--ink); border: 1px solid var(--line-strong); border-radius: 4px; padding: 6px 9px; font-size: 13px; white-space: nowrap; box-shadow: 0 4px 14px rgba(0,0,0,.18); z-index: 3; }
+  .tip .t { color: var(--ink-soft); }
+  .empty { color: var(--ink-soft); padding: 16px 0; }
+  .method p { margin-bottom: 10px; }
+  .method b { font-weight: 700; }
+  .foot { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: 13px; }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+  .nav { display: flex; align-items: baseline; gap: 0 20px; margin: 0 0 22px; border-bottom: 1px solid var(--line); font-size: 14px; overflow-x: auto; scrollbar-width: none; }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav a { color: var(--ink-soft); text-decoration: none; padding: 8px 0 9px; border-bottom: 2px solid transparent; white-space: nowrap; }
+  .nav a:hover { color: var(--ink); }
+  .nav a[aria-current="page"] { color: var(--ink); font-weight: 700; border-bottom-color: var(--ink); }
+  .nav .brand { color: var(--ink); font-weight: 800; letter-spacing: .06em; margin-right: 4px; }
+
+  td.bar { width: 16%; min-width: 5.5rem; }
+  .blocks { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr)); gap: 0 32px; }
+  .blocks h3 { margin-top: 14px; }
+  table.tight th, table.tight td { padding: 6px 6px; font-size: 14px; }
+  .pick-team { font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav" aria-label="Pages"><span class="brand">FCHL</span><a href="./">Trades</a><a href="./?p=value">Team value</a><a href="./?p=cap">Cap</a><a href="./?p=standings" aria-current="page">Standings</a><a href="./?p=stats">Player stats</a><a href="./?p=progression">Progression</a></nav>
+
+  <header>
+    <h1>Standings</h1>
+    <p class="lede"><span id="season"></span>: the table, what sits under it, and how the playoff race is likely to end.</p>
+    <p class="meta">Through the league save of <span id="as-of"></span>: <span id="n-played"></span> games played, <span id="n-left"></span> to go. Updated <span id="built"></span>.</p>
+    <p class="meta pick-team"><label for="t-pick">Highlight</label> <select id="t-pick"></select></p>
+  </header>
+
+  <section id="table">
+    <div class="head"><h2>The table</h2>
+      <span class="seg" id="view"><button type="button" data-v="wild" aria-pressed="true">Wild card</button><button type="button" data-v="div" aria-pressed="false">Division</button><button type="button" data-v="league" aria-pressed="false">League</button></span></div>
+    <div id="tables"></div>
+    <p class="note" style="margin-top:10px">The line is the playoff cut: the top three in each division, then two wild cards per conference.<span id="pre-note" hidden> No game has been played yet, so teams are in alphabetical order and the race below runs on lineups alone.</span></p>
+  </section>
+
+  <section id="race">
+    <div class="head"><h2>The race</h2><span class="note">The rest of the season played out <span id="n-sims"></span> times. Click a header to sort.</span></div>
+    <div class="scroll tall">
+      <table id="race-table">
+        <thead><tr>
+          <th data-k="code" data-d="asc">Team</th>
+          <th class="num" data-k="pts">PTS</th>
+          <th class="num" data-k="proj" title="Average final points, with the range 8 seasons in 10 land in">Projected</th>
+          <th class="num" data-k="po">Playoffs</th>
+          <th class="sec" aria-label="Playoff chance"></th>
+          <th class="num sec" data-k="dv" title="Chance of finishing first in the division">Division</th>
+          <th class="num" data-k="first" title="Chance of the first overall pick, after the lottery">1st pick</th>
+          <th class="num sec" data-k="str" title="Goals per game better or worse than an average team">Strength</th>
+          <th class="num sec" data-k="sosLeft" title="Average strength of the opponents left; above zero is a harder road">Schedule left</th>
+          <th class="num sec" data-k="homeLeft">Home left</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="hood">
+    <div class="head"><h2>Under the hood</h2><span class="note">Who is driving play, who is running hot. Click a header to sort.</span></div>
+    <div class="scroll tall">
+      <table id="hood-table">
+        <thead><tr>
+          <th data-k="code" data-d="asc">Team</th>
+          <th class="num" data-k="cfp" title="Share of all shot attempts in the team's games">Shot share</th>
+          <th class="num sec" data-k="sfg">Shots for</th>
+          <th class="num sec" data-k="sag">Shots against</th>
+          <th class="num" data-k="shp" title="Goals per shot on goal">Sh%</th>
+          <th class="num" data-k="svp" title="Saves per shot against">Sv%</th>
+          <th class="num" data-k="pdo" title="Sh% plus Sv%. Far from 100 tends not to last">PDO</th>
+          <th class="num" data-k="pp">PP%</th>
+          <th class="num" data-k="pk">PK%</th>
+          <th class="num sec" data-k="fo">Faceoffs</th>
+          <th class="sec" data-k="onep" title="Games decided by one goal: wins, losses, overtime losses">One-goal games</th>
+          <th class="sec" data-k="otp" title="Overtime wins and losses">Overtime</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="method" class="method">
+    <div class="head"><h2>How it works</h2></div>
+    <p><b>The table.</b> Built from every regular-season game in the save: two points for a win, one for an overtime loss. Teams level on points are split by fewer games played, then regulation wins, wins and goal difference, the NHL's order; the game's own order isn't confirmed.</p>
+    <p><b>Under the hood.</b> Shot share is a team's part of all shot attempts in its games, the best quick read of who controls play. Sh% and Sv% are goals per shot, for and against; PDO adds them up, and a team far above or below 100 is usually riding luck that fades. Faceoffs is the share won.</p>
+    <p><b>The race.</b> Each team gets a strength, in goals per game against an average team. It starts from the lineup: the average overall of the 12 forwards, the six defencemen and the starting goalie, weighted by how much each has mattered to goal difference in the game. Results then pull it toward the team's actual goal difference, slowly: a full season of games moves it about halfway. Every game left is played out <span id="m-sims"></span> times, with a small edge for the home team and <span id="m-ot"></span>% of games going to overtime for the loser's point.</p>
+    <p><b>Playoffs and the pick.</b> Playoffs is how often a team finishes in the top three of its division or takes one of its conference's two wild cards. 1st pick is its chance at first overall once the lottery is run among the 16 teams that miss: the league's odds, with a winner able to move up at most ten spots.</p>
+    <p><b>How good is it?</b> The weights were fitted on some 4,900 games of another HLM27 league that plays on the same roster file, where the lineup number called winners better than the standings did. They will be refitted on this league's own games after its first season. It doesn't know about trades, injuries or call-ups that haven't happened, so read it as where things point today.</p>
+  </section>
+
+  <footer class="foot">Chicago Blackhawks front office, FCHL (HLM27 sim league). Built from the official league saves.</footer>
+</div>
+<script id="data" type="application/json">{"asOf":"2026-10-06","names":{"ANA":"Anaheim","BOS":"Boston","BUF":"Buffalo","CAR":"Carolina","CBJ":"Columbus","CGY":"Calgary","CHI":"Chicago","DAL":"Dallas","DET":"Detroit","EDM":"Edmonton","FLA":"Florida","LAK":"Los Angeles","MIN":"Minnesota","MTL":"Montreal","NJD":"New Jersey","NSH":"Nashville","NYI":"NY Islanders","NYR":"NY Rangers","OTT":"Ottawa","PHI":"Philadelphia","PIT":"Pittsburgh","QUE":"Quebec","SEA":"Seattle","SJS":"San Jose","STL":"St. Louis","TBL":"Tampa Bay","TOR":"Toronto","UTA":"Utah","VAN":"Vancouver","VGK":"Vegas","WPG":"Winnipeg","WSH":"Washington"},"home":"CHI","teams":[{"code":"ANA","conf":1,"div":2,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":-0.72,"lineup":-0.72,"proj":77.2,"lo":64,"hi":90,"po":23.4,"dv":0.5,"first":7.6,"left":84,"homeLeft":42,"sosLeft":-0.07,"sosPlayed":0},{"code":"BOS","conf":0,"div":1,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":0.28,"lineup":0.28,"proj":95.0,"lo":82,"hi":108,"po":48.4,"dv":5.4,"first":1.0,"left":84,"homeLeft":42,"sosLeft":0.08,"sosPlayed":0},{"code":"BUF","conf":0,"div":1,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":0.36,"lineup":0.36,"proj":96.5,"lo":84,"hi":109,"po":55.7,"dv":7.4,"first":0.8,"left":84,"homeLeft":42,"sosLeft":0.07,"sosPlayed":0},{"code":"CAR","conf":0,"div":0,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":0.68,"lineup":0.68,"proj":103.6,"lo":91,"hi":116,"po":81.2,"dv":31.9,"first":0.2,"left":84,"homeLeft":42,"sosLeft":0.05,"sosPlayed":0},{"code":"CBJ","conf":0,"div":0,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":-0.0,"lineup":-0.0,"proj":88.8,"lo":76,"hi":102,"po":28.0,"dv":3.2,"first":2.5,"left":84,"homeLeft":42,"sosLeft":0.08,"sosPlayed":0},{"code":"CGY","conf":1,"div":2,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":-0.89,"lineup":-0.89,"proj":73.7,"lo":61,"hi":87,"po":14.2,"dv":0.2,"first":10.0,"left":84,"homeLeft":42,"sosLeft":-0.06,"sosPlayed":0},{"code":"CHI","conf":1,"div":3,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":-0.29,"lineup":-0.29,"proj":86.0,"lo":73,"hi":99,"po":48.5,"dv":4.2,"first":3.3,"left":84,"homeLeft":42,"sosLeft":-0.06,"sosPlayed":0},{"code":"DAL","conf":1,"div":3,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":0.42,"lineup":0.42,"proj":101.0,"lo":88,"hi":114,"po":92.4,"dv":39.9,"first":0.3,"left":84,"homeLeft":42,"sosLeft":-0.09,"sosPlayed":0},{"code":"DET","conf":0,"div":1,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":-0.05,"lineup":-0.05,"proj":87.3,"lo":74,"hi":100,"po":21.7,"dv":1.4,"first":3.0,"left":84,"homeLeft":42,"sosLeft":0.09,"sosPlayed":0},{"code":"EDM","conf":1,"div":2,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":-0.48,"lineup":-0.48,"proj":82.1,"lo":69,"hi":95,"po":40.3,"dv":1.3,"first":4.9,"left":84,"homeLeft":42,"sosLeft":-0.08,"sosPlayed":0},{"code":"FLA","conf":0,"div":1,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":0.42,"lineup":0.42,"proj":97.7,"lo":84,"hi":111,"po":59.5,"dv":8.8,"first":0.7,"left":84,"homeLeft":42,"sosLeft":0.07,"sosPlayed":0},{"code":"LAK","conf":1,"div":2,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":-0.18,"lineup":-0.18,"proj":88.7,"lo":75,"hi":102,"po":67.1,"dv":4.6,"first":2.2,"left":84,"homeLeft":42,"sosLeft":-0.09,"sosPlayed":0},{"code":"MIN","conf":1,"div":3,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":0.16,"lineup":0.16,"proj":95.4,"lo":82,"hi":108,"po":81.6,"dv":19.3,"first":0.9,"left":84,"homeLeft":42,"sosLeft":-0.08,"sosPlayed":0},{"code":"MTL","conf":0,"div":1,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":0.54,"lineup":0.54,"proj":100.5,"lo":87,"hi":114,"po":70.2,"dv":14.6,"first":0.4,"left":84,"homeLeft":42,"sosLeft":0.07,"sosPlayed":0},{"code":"NJD","conf":0,"div":0,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":0.47,"lineup":0.47,"proj":98.8,"lo":85,"hi":112,"po":64.8,"dv":16.7,"first":0.6,"left":84,"homeLeft":42,"sosLeft":0.06,"sosPlayed":0},{"code":"NSH","conf":1,"div":3,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":-0.78,"lineup":-0.78,"proj":75.3,"lo":62,"hi":88,"po":13.3,"dv":0.4,"first":8.9,"left":84,"homeLeft":42,"sosLeft":-0.03,"sosPlayed":0},{"code":"NYI","conf":0,"div":0,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":-0.01,"lineup":-0.01,"proj":88.5,"lo":75,"hi":102,"po":27.1,"dv":2.9,"first":2.6,"left":84,"homeLeft":42,"sosLeft":0.08,"sosPlayed":0},{"code":"NYR","conf":0,"div":0,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":-0.11,"lineup":-0.11,"proj":86.3,"lo":73,"hi":99,"po":20.0,"dv":2.0,"first":3.4,"left":84,"homeLeft":42,"sosLeft":0.09,"sosPlayed":0},{"code":"OTT","conf":0,"div":1,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":0.08,"lineup":0.08,"proj":90.3,"lo":77,"hi":104,"po":31.7,"dv":2.5,"first":2.0,"left":84,"homeLeft":42,"sosLeft":0.09,"sosPlayed":0},{"code":"PHI","conf":0,"div":0,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":0.24,"lineup":0.24,"proj":94.2,"lo":81,"hi":107,"po":47.9,"dv":8.6,"first":1.2,"left":84,"homeLeft":42,"sosLeft":0.07,"sosPlayed":0},{"code":"PIT","conf":0,"div":0,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":0.06,"lineup":0.06,"proj":90.1,"lo":77,"hi":103,"po":32.5,"dv":4.2,"first":2.1,"left":84,"homeLeft":42,"sosLeft":0.08,"sosPlayed":0},{"code":"QUE","conf":1,"div":3,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":-0.06,"lineup":-0.06,"proj":90.6,"lo":77,"hi":104,"po":67.0,"dv":9.0,"first":1.8,"left":84,"homeLeft":42,"sosLeft":-0.07,"sosPlayed":0},{"code":"SEA","conf":1,"div":2,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":-0.16,"lineup":-0.16,"proj":88.8,"lo":76,"hi":102,"po":67.9,"dv":4.9,"first":2.2,"left":84,"homeLeft":42,"sosLeft":-0.09,"sosPlayed":0},{"code":"SJS","conf":1,"div":2,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":-0.77,"lineup":-0.77,"proj":76.1,"lo":63,"hi":89,"po":19.9,"dv":0.3,"first":8.3,"left":84,"homeLeft":42,"sosLeft":-0.06,"sosPlayed":0},{"code":"STL","conf":1,"div":3,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":-0.11,"lineup":-0.11,"proj":89.6,"lo":76,"hi":103,"po":62.9,"dv":8.0,"first":2.1,"left":84,"homeLeft":42,"sosLeft":-0.07,"sosPlayed":0},{"code":"TBL","conf":0,"div":1,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":1.06,"lineup":1.06,"proj":111.2,"lo":98,"hi":124,"po":94.0,"dv":56.3,"first":0.0,"left":84,"homeLeft":42,"sosLeft":0.04,"sosPlayed":0},{"code":"TOR","conf":0,"div":1,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":0.15,"lineup":0.15,"proj":91.9,"lo":79,"hi":105,"po":37.4,"dv":3.6,"first":1.7,"left":84,"homeLeft":42,"sosLeft":0.08,"sosPlayed":0},{"code":"UTA","conf":1,"div":3,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":0.14,"lineup":0.14,"proj":95.2,"lo":82,"hi":108,"po":81.0,"dv":18.5,"first":0.9,"left":84,"homeLeft":42,"sosLeft":-0.08,"sosPlayed":0},{"code":"VAN","conf":1,"div":2,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":-1.27,"lineup":-1.27,"proj":65.9,"lo":53,"hi":79,"po":3.1,"dv":0.0,"first":16.2,"left":84,"homeLeft":42,"sosLeft":-0.04,"sosPlayed":0},{"code":"VGK","conf":1,"div":2,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":0.88,"lineup":0.88,"proj":111.3,"lo":99,"hi":124,"po":99.5,"dv":88.1,"first":0.0,"left":84,"homeLeft":42,"sosLeft":-0.14,"sosPlayed":0},{"code":"WPG","conf":1,"div":3,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":-0.69,"lineup":-0.69,"proj":77.2,"lo":64,"hi":90,"po":18.0,"dv":0.6,"first":7.8,"left":84,"homeLeft":42,"sosLeft":-0.04,"sosPlayed":0},{"code":"WSH","conf":0,"div":0,"gp":0,"w":0,"l":0,"otl":0,"otw":0,"gf":0,"ga":0,"sf":0,"sa":0,"cf":0,"ca":0,"fw":0,"fl":0,"home":[0,0,0],"away":[0,0,0],"one":[0,0,0],"pts":0,"l10":[0,0,0],"strk":"","ppg":0,"ppo":0,"pkga":0,"pko":0,"str":0.66,"lineup":0.66,"proj":103.1,"lo":90,"hi":116,"po":79.9,"dv":30.4,"first":0.2,"left":84,"homeLeft":42,"sosLeft":0.05,"sosPlayed":0}],"confs":["East","West"],"divs":["Metropolitan","Atlantic","Pacific","Central"],"played":0,"left":1344,"sims":10000,"season":"2026-27","ot":15.6,"lottery":[26.0,13.5,11.5,9.5,8.5,7.5,6.5,6.0,4.5,3.5,3.0,0.0,0.0,0.0,0.0,0.0],"built":"2026-11-12"}</script>
+<script>
+(function () {
+  'use strict';
+
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+  const D = JSON.parse($('data').textContent);
+  const fmtDate = (iso) => new Date(iso + 'T12:00:00').toLocaleDateString('en-CA', {year: 'numeric', month: 'short', day: 'numeric'});
+  const money = (x) => { if (x == null) return ''; const a = Math.abs(x), s = x < 0 ? '−' : ''; return a >= 1e6 ? s + '$' + (a / 1e6).toFixed(a % 1e5 ? (a % 1e4 ? 3 : 2) : 1).replace(/(\.\d*?[1-9])0+$/, '$1') + 'M' : s + '$' + Math.round(a / 1000) + 'K'; };
+  const mil = (x) => (x < 0 ? '−' : '') + '$' + (Math.abs(x) / 1e6).toFixed(1) + 'M';
+  const signed = (x, d) => (x > 0 ? '+' : x < 0 ? '−' : '') + Math.abs(x).toLocaleString('en-CA', {minimumFractionDigits: d || 0, maximumFractionDigits: d || 0});
+  const cls = (x) => x > 0 ? 'up' : x < 0 ? 'down' : 'soft';
+  const gradeCls = (g) => 'g-' + (g ? g[0].toLowerCase() : 'x');
+  { const nav = document.querySelector('.nav'), cur = nav && nav.querySelector('[aria-current]'); if (cur) nav.scrollLeft = Math.max(0, cur.offsetLeft - nav.offsetLeft - 60); }  // keep the open tab in view on a phone
+  $('as-of') && ($('as-of').textContent = fmtDate(D.asOf));
+  $('built') && ($('built').textContent = fmtDate(D.built));
+  // The picked team lives in the address bar as #CHI, so a team's view can be shared.
+  const HOME = D.home;
+  const teamCodes = new Set((D.teams || []).map((t) => t.code || t.team));
+  const hashTeam = () => { const h = (location.hash || '').slice(1).toUpperCase(); return teamCodes.has(h) ? h : null; };
+  const setHashTeam = (code) => history.replaceState(null, '', '#' + code);
+  function fillTeams(sel, picked, names) {
+    sel.innerHTML = [...teamCodes].sort().map((c) => `<option value="${c}"${c === picked ? ' selected' : ''}>${c} · ${esc(names[c] || c)}</option>`).join('');
+  }
+  // Click a header to sort; data-k names the row field, data-d its first direction.
+  function sortable(table, state, draw) {
+    const heads = [...table.querySelectorAll('th[data-k]')];
+    const mark = () => heads.forEach((th) => { th.classList.add('sortable'); th.setAttribute('aria-sort', th.dataset.k === state.k ? (state.d > 0 ? 'ascending' : 'descending') : 'none'); });
+    heads.forEach((th) => { th.tabIndex = 0; const go = () => { const k = th.dataset.k; state.d = state.k === k ? -state.d : (th.dataset.d === 'asc' ? 1 : -1); state.k = k; mark(); draw(); };
+      th.addEventListener('click', go); th.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }); });
+    mark();
+  }
+  const by = (state) => (a, b) => { const x = a[state.k], y = b[state.k]; return (typeof x === 'string' || typeof y === 'string' ? String(x).localeCompare(String(y)) : (x == null ? -1e99 : x) - (y == null ? -1e99 : y)) * state.d; };
+  // One tooltip per chart: show(html, evt) follows the pointer inside the chart box.
+  function tooltip(box) {
+    const tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; box.appendChild(tip);
+    return { show(html, e) { tip.innerHTML = html; tip.hidden = false; const r = box.getBoundingClientRect(); let x = e.clientX - r.left + 12, y = e.clientY - r.top + 12;
+        if (x + tip.offsetWidth > r.width) x = Math.max(0, e.clientX - r.left - tip.offsetWidth - 12); tip.style.left = x + 'px'; tip.style.top = y + 'px'; }, hide() { tip.hidden = true; } };
+  }
+
+  const pct = (a, b) => b ? 100 * a / b : 0;
+  const rec = (r) => r.join('–');
+  const T = D.teams.map((t) => Object.assign(t, { name: D.names[t.code] || t.code, diff: t.gf - t.ga, pp100: t.gp ? t.pts / (2 * t.gp) : 0, rw: t.w - t.otw,
+    cfp: pct(t.cf, t.cf + t.ca), sfg: t.gp ? t.sf / t.gp : 0, sag: t.gp ? t.sa / t.gp : 0, shp: pct(t.gf, t.sf), svp: 100 - pct(t.ga, t.sa),
+    pp: pct(t.ppg, t.ppo), pk: 100 - pct(t.pkga, t.pko), fo: pct(t.fw, t.fw + t.fl), onep: pct(2 * t.one[0] + t.one[2], 2 * (t.one[0] + t.one[1] + t.one[2])), otp: t.otw - t.otl }));
+  T.forEach((t) => { t.pdo = t.shp + t.svp; });
+  $('season').textContent = D.season; $('n-played').textContent = D.played; $('n-left').textContent = D.left.toLocaleString('en-CA');
+  $('n-sims').textContent = $('m-sims').textContent = D.sims.toLocaleString('en-CA'); $('m-ot').textContent = D.ot;
+  if (!D.played) { $('hood').hidden = true; $('pre-note').hidden = false; }  // nothing under the hood before the first game
+  let picked = hashTeam() || HOME;
+  const rank = (a, b) => b.pts - a.pts || a.gp - b.gp || b.rw - a.rw || b.w - a.w || b.diff - a.diff || a.code.localeCompare(b.code);
+
+  // The table
+  let view = 'wild';
+  // The league view has room for every column; the two-conference views keep to the essentials.
+  const head = (full) => '<thead><tr><th class="num"></th><th>Team</th><th class="num">GP</th><th class="num">W</th><th class="num">L</th><th class="num">OTL</th><th class="num">PTS</th>' +
+    (full ? '<th class="num sec">P%</th><th class="num sec">RW</th><th class="num sec">GF</th><th class="num sec">GA</th>' : '') + '<th class="num sec">Diff</th>' +
+    (full ? '<th class="sec">Home</th><th class="sec">Away</th>' : '') + '<th class="sec">L10</th>' + (full ? '<th class="sec">Strk</th>' : '') + '</tr></thead>';
+  const row = (t, i, cut, full) => `<tr class="${t.code === picked ? 'me' : ''}${cut ? ' cut' : ''}"><td class="num soft">${i}</td><td><b>${t.code}</b> <span class="soft wide">${esc(t.name)}</span></td>
+    <td class="num">${t.gp}</td><td class="num">${t.w}</td><td class="num">${t.l}</td><td class="num">${t.otl}</td><td class="num"><b>${t.pts}</b></td>` +
+    (full ? `<td class="num sec">${t.pp100.toFixed(3).replace(/^0/, '')}</td><td class="num sec">${t.rw}</td><td class="num sec">${t.gf}</td><td class="num sec">${t.ga}</td>` : '') +
+    `<td class="num sec ${cls(t.diff)}">${signed(t.diff)}</td>` + (full ? `<td class="sec">${rec(t.home)}</td><td class="sec">${rec(t.away)}</td>` : '') +
+    `<td class="sec">${rec(t.l10)}</td>` + (full ? `<td class="sec">${t.strk}</td>` : '') + '</tr>';
+  const block = (title, list, cutAt, full) => `<h3>${esc(title)}</h3><div class="scroll tall"><table${full ? '' : ' class="tight"'}>${head(full)}<tbody>${list.map((t, i) => row(t, i + 1, i + 1 === cutAt, full)).join('')}</tbody></table></div>`;
+  function drawTable() {
+    if (view === 'league') { $('tables').innerHTML = block('League', T.slice().sort(rank), 0, true); return; }
+    $('tables').innerHTML = '<div class="blocks">' + D.confs.map((cn, c) => {
+      const inConf = T.filter((t) => t.conf === c), divs = [...new Set(inConf.map((t) => t.div))].sort(), out = [], rest = [];
+      divs.forEach((d) => { const s = inConf.filter((t) => t.div === d).sort(rank);
+        if (view === 'div') out.push(block(D.divs[d], s, 3)); else { out.push(block(D.divs[d], s.slice(0, 3))); rest.push(...s.slice(3)); } });
+      if (view !== 'div') out.push(block(cn + ' wild card', rest.sort(rank), 2));
+      return '<div>' + out.join('') + '</div>';
+    }).join('') + '</div>';
+  }
+  $('view').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; view = b.dataset.v;
+    [...$('view').children].forEach((x) => x.setAttribute('aria-pressed', x === b)); drawTable(); });
+
+  // The race
+  const rs = {k: 'po', d: -1};
+  const p1 = (x) => x >= 99.95 ? '>99.9%' : x > 0 && x < 0.05 ? '<0.1%' : x.toFixed(1) + '%';
+  function drawRace() {
+    $('race-table').tBodies[0].innerHTML = T.slice().sort((a, b) => by(rs)(a, b) || b.proj - a.proj).map((t) => `<tr class="${t.code === picked ? 'me' : ''}">
+      <td><b>${t.code}</b> <span class="soft wide">${esc(t.name)}</span></td><td class="num">${t.pts}</td>
+      <td class="num"><b>${Math.round(t.proj)}</b> <span class="soft wide">${t.lo}–${t.hi}</span></td>
+      <td class="num"><b>${p1(t.po)}</b></td><td class="bar sec"><span class="meter"><i class="blue" style="width:${t.po}%"></i></span></td>
+      <td class="num sec">${p1(t.dv)}</td><td class="num">${t.first ? p1(t.first) : '<span class="soft">–</span>'}</td>
+      <td class="num sec ${cls(t.str)}">${signed(t.str, 2)}</td><td class="num sec">${signed(t.sosLeft, 2)}</td><td class="num sec">${t.homeLeft}<span class="soft">/${t.left}</span></td></tr>`).join('');
+  }
+  sortable($('race-table'), rs, drawRace);
+
+  // Under the hood
+  const hs = {k: 'cfp', d: -1};
+  const f1 = (x) => x.toFixed(1);
+  function drawHood() {
+    $('hood-table').tBodies[0].innerHTML = T.slice().sort(by(hs)).map((t) => `<tr class="${t.code === picked ? 'me' : ''}">
+      <td><b>${t.code}</b> <span class="soft wide">${esc(t.name)}</span></td><td class="num"><b>${f1(t.cfp)}%</b></td><td class="num sec">${f1(t.sfg)}</td><td class="num sec">${f1(t.sag)}</td>
+      <td class="num">${f1(t.shp)}</td><td class="num">${f1(t.svp)}</td><td class="num ${t.pdo >= 102 ? 'up' : t.pdo <= 98 ? 'down' : ''}">${f1(t.pdo)}</td>
+      <td class="num">${f1(t.pp)}</td><td class="num">${f1(t.pk)}</td><td class="num sec">${f1(t.fo)}%</td><td class="sec">${rec(t.one)}</td><td class="sec">${t.otw}–${t.otl}</td></tr>`).join('');
+  }
+  sortable($('hood-table'), hs, drawHood);
+
+  function drawAll() { drawTable(); drawRace(); drawHood(); }
+  fillTeams($('t-pick'), picked, D.names);
+  $('t-pick').addEventListener('change', (e) => { picked = e.target.value; setHashTeam(picked); drawAll(); });
+  addEventListener('hashchange', () => { const c = hashTeam(); if (c && c !== picked) { picked = c; $('t-pick').value = c; drawAll(); } });
+  drawAll();
+
+})();
+</script>
+</body>
+</html>

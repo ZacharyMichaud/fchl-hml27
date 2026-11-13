@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FCHL progression</title>
+<meta name="description" content="Every rating change in the league, tick by tick.">
+<style>
+  :root {
+    color-scheme: light dark;
+    --ice: #f2f6f9; --paper: #ffffff; --ink: #11203a; --ink-soft: #5b6b82; --line: #d6dfe8; --line-strong: #aebbcb;
+    --blue: #1d5fa6; --blue-soft: #dbe8f7; --red: #b4121c; --red-soft: #f8dcdc; --stamp: #b4121c; --hover: #e9f0f8;
+    --bar: #7f8ea3; --track: #e3eaf1;
+    --sans: "Helvetica Neue", Helvetica, Arial, "Segoe UI", Roboto, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) { :root {
+    --ice: #0e1726; --paper: #15213a; --ink: #edf2f8; --ink-soft: #9fb0c6; --line: #2a3850; --line-strong: #46587a;
+    --blue: #6aa6ee; --blue-soft: #1c3458; --red: #f0636b; --red-soft: #4b1f24; --stamp: #f0636b; --hover: #1d2d4a;
+    --bar: #5d7090; --track: #1f2c45;
+  } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ice); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.45; -webkit-text-size-adjust: 100%; }
+  a { color: var(--blue); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 16px 16px 48px; }
+  h1 { font-size: clamp(30px, 5vw, 46px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; margin: 0 0 8px; }
+  h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; margin: 0; }
+  h3 { font-size: 15px; font-weight: 700; margin: 22px 0 6px; }
+  p { margin: 0; max-width: 70ch; }
+  .lede { color: var(--ink-soft); font-size: 16px; }
+  .meta { color: var(--ink-soft); font-size: 13px; margin-top: 6px; }
+  section { margin-top: 40px; }
+  .head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; padding-bottom: 10px; border-bottom: 2px solid var(--ink); margin-bottom: 12px; }
+  .note { color: var(--ink-soft); font-size: 13px; }
+  .scroll { overflow: auto; max-height: 76vh; border-bottom: 1px solid var(--line); }
+  .scroll.tall { max-height: none; }
+  table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+  th, td { padding: 7px 10px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: middle; white-space: nowrap; }
+  th { position: sticky; top: 0; z-index: 1; background: var(--ice); color: var(--ink-soft); font-weight: 600; font-size: 13px; }
+  th.sortable { cursor: pointer; user-select: none; }
+  th.sortable:hover { color: var(--ink); }
+  th[aria-sort="ascending"]::after { content: " \2191"; } th[aria-sort="descending"]::after { content: " \2193"; }
+  .num, th.num { text-align: right; }
+  tr.pick { cursor: pointer; } tr.pick:hover td { background: var(--hover); }
+  tr.me td { background: var(--blue-soft); }
+  tr.cut td { border-bottom: 2px solid var(--ink-soft); }
+  tr.sub td { color: var(--ink-soft); font-size: 13px; font-weight: 600; background: var(--ice); padding-top: 12px; }
+  tr.sum td { font-weight: 700; border-top: 1px solid var(--line-strong); }
+  .sec { display: table-cell; }
+  @media (max-width: 760px) { .sec, .wide { display: none; } th, td { padding: 7px 6px; } }
+  .grade { display: inline-block; min-width: 2.2em; font-weight: 800; letter-spacing: 0.02em; }
+  .g-a, .g-b { color: var(--blue); } .g-d, .g-f { color: var(--red); } .g-x { color: var(--ink-soft); font-weight: 600; }
+  .up { color: var(--blue); } .down { color: var(--red); } .soft { color: var(--ink-soft); }
+  .team-head { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; }
+  .stamp { width: 112px; height: 112px; border: 4px solid var(--stamp); color: var(--stamp); border-radius: 50%; display: grid; place-items: center; font-size: 46px; font-weight: 900; letter-spacing: -0.02em; transform: rotate(-8deg); flex: none; }
+  .team-title h2 { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; }
+  .team-title .gm { color: var(--ink-soft); font-size: 15px; }
+  select, input[type="search"] { font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--line-strong); border-radius: 4px; padding: 6px 10px; max-width: 100%; }
+  .team-title select { margin-top: 10px; }
+  .figures { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); gap: 0 24px; margin: 22px 0 14px; border-top: 1px solid var(--line); }
+  .figures div { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .figures .l { color: var(--ink-soft); font-size: 13px; }
+  .figures .v { font-size: 26px; font-weight: 700; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+  .figures .s { color: var(--ink-soft); font-size: 13px; }
+  .tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-bottom: 10px; }
+  .tools input[type="search"] { width: min(100%, 22rem); }
+  .seg { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 4px; overflow: hidden; }
+  .seg button { font: inherit; font-size: 14px; color: var(--ink-soft); background: var(--paper); border: 0; border-right: 1px solid var(--line-strong); padding: 6px 12px; cursor: pointer; }
+  .seg button:last-child { border-right: 0; }
+  .seg button:hover { color: var(--ink); }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); font-weight: 600; }
+  .tag { display: inline-block; padding: 0 5px; border: 1px solid var(--line-strong); border-radius: 3px; color: var(--ink-soft); font-size: 11px; font-weight: 600; line-height: 16px; vertical-align: 1px; }
+  .pot { display: inline-block; padding: 0 6px; border-radius: 3px; font-size: 12px; font-weight: 700; line-height: 18px; vertical-align: 1px; white-space: nowrap; color: #fff; }
+  .pot.m0 { background: #2f6fd6; } .pot.m1 { background: #2b8a3e; } .pot.m2 { background: #e8890c; color: #2b1700; }
+  .pot.m3 { background: #d03b3b; } .pot.m4 { background: #7f1d1d; } .pot.m5 { background: #6f7a89; }
+  /* Bars: thin, rounded at the data end, on a quiet track. */
+  .meter { position: relative; display: inline-block; vertical-align: middle; width: 100%; min-width: 5rem; height: 8px; border-radius: 4px; background: var(--track); overflow: hidden; }
+  .meter i { position: absolute; top: 0; bottom: 0; left: 0; background: var(--bar); border-radius: 0 4px 4px 0; }
+  .meter i.blue { background: var(--blue); } .meter i.red { background: var(--red); }
+  .dbar { position: relative; display: inline-block; vertical-align: middle; width: 100%; min-width: 6rem; height: 8px; }
+  .dbar i { position: absolute; top: 0; bottom: 0; }
+  .dbar .pos { background: var(--blue); border-radius: 0 4px 4px 0; } .dbar .neg { background: var(--red); border-radius: 4px 0 0 4px; }
+  .dbar .zero { top: -3px; bottom: -3px; width: 1px; margin-left: -0.5px; background: var(--ink-soft); }
+  @media (forced-colors: active) { .meter i, .dbar .pos, .dbar .neg { background: CanvasText; } }
+  .chart { position: relative; }
+  .chart svg { display: block; width: 100%; height: auto; }
+  .tip { position: absolute; pointer-events: none; background: var(--paper); color: var(--ink); border: 1px solid var(--line-strong); border-radius: 4px; padding: 6px 9px; font-size: 13px; white-space: nowrap; box-shadow: 0 4px 14px rgba(0,0,0,.18); z-index: 3; }
+  .tip .t { color: var(--ink-soft); }
+  .empty { color: var(--ink-soft); padding: 16px 0; }
+  .method p { margin-bottom: 10px; }
+  .method b { font-weight: 700; }
+  .foot { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: 13px; }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+  .nav { display: flex; align-items: baseline; gap: 0 20px; margin: 0 0 22px; border-bottom: 1px solid var(--line); font-size: 14px; overflow-x: auto; scrollbar-width: none; }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav a { color: var(--ink-soft); text-decoration: none; padding: 8px 0 9px; border-bottom: 2px solid transparent; white-space: nowrap; }
+  .nav a:hover { color: var(--ink); }
+  .nav a[aria-current="page"] { color: var(--ink); font-weight: 700; border-bottom-color: var(--ink); }
+  .nav .brand { color: var(--ink); font-weight: 800; letter-spacing: .06em; margin-right: 4px; }
+
+  td.bar { width: 22%; min-width: 6rem; }
+  .arrow { color: var(--ink-soft); }
+  .was { color: var(--ink-soft); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav" aria-label="Pages"><span class="brand">FCHL</span><a href="./">Trades</a><a href="./?p=value">Team value</a><a href="./?p=cap">Cap</a><a href="./?p=standings">Standings</a><a href="./?p=stats">Player stats</a><a href="./?p=progression" aria-current="page">Progression</a></nav>
+
+  <header>
+    <h1>Progression</h1>
+    <p class="lede">Who got better, and when. Ratings move on the 2nd of each month from November to March, and once more over the summer.</p>
+    <p class="meta">Through the league save of <span id="as-of"></span>. Updated <span id="built"></span>.</p>
+    <div class="tools" style="margin-top:14px">
+      <label for="when">When</label> <select id="when"></select>
+      <label for="t-pick">Team</label> <select id="t-pick"></select>
+    </div>
+  </header>
+
+  <section id="teams">
+    <div class="head"><h2>By team</h2><span class="note" id="teams-note"></span></div>
+    <div class="scroll tall">
+      <table id="team-table">
+        <thead><tr>
+          <th data-k="code" data-d="asc">Team</th>
+          <th class="num" data-k="pts" title="Rating points gained, less any lost">Points</th>
+          <th class="sec" aria-label="Points gained"></th>
+          <th class="num" data-k="n" title="Players whose rating moved">Players</th>
+          <th class="num sec" data-k="nhl" title="Points gained by players on the NHL club">NHL club</th>
+          <th class="num sec" data-k="rest" title="Points gained in the minors, junior, college and Europe">Elsewhere</th>
+          <th class="sec">Biggest mover</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="players">
+    <div class="head"><h2>Players</h2><span class="note" id="players-note"></span></div>
+    <div class="tools"><input type="search" id="q" placeholder="Search a player" aria-label="Search players" autocomplete="off"></div>
+    <div class="scroll">
+      <table id="player-table">
+        <thead><tr>
+          <th data-k="n" data-d="asc">Player</th><th data-k="t" data-d="asc">Team</th><th class="sec" data-k="c" data-d="asc">Club</th><th class="sec" data-k="pos" data-d="asc">Pos</th>
+          <th class="num" data-k="age">Age</th><th class="num" data-k="a">Overall</th><th class="num" data-k="d">Change</th><th class="sec" data-k="pi" data-d="asc">Potential</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="method" class="method">
+    <div class="head"><h2>How it works</h2></div>
+    <p><b>Monthly ticks.</b> On the 2nd of each month from November to March the game moves ratings, usually by a point or two, and tells each GM about his own players. Those reports stay in the league save, so this page lists every team's. A player needs room under his ceiling and games played to move; almost nobody 29 or older does.</p>
+    <p><b>Summer.</b> The big step. Over the summer everyone ages a year: prospects can jump several points, and some veterans lose a point or two. There is no league-wide report for it, so the summer rows compare each player's rating in the last save before the rollover with the first one after.</p>
+    <p><b>Club.</b> Where the player was when his rating moved: the NHL club, or the league he was playing in. For the summer it is the league he played most of the season before in. Potential is his badge at that moment, in the game's colours.</p>
+  </section>
+
+  <footer class="foot">Chicago Blackhawks front office, FCHL (HLM27 sim league). Built from the official league saves.</footer>
+</div>
+<script id="data" type="application/json">{"asOf":"2026-10-06","names":{"ANA":"Anaheim","BOS":"Boston","BUF":"Buffalo","CAR":"Carolina","CBJ":"Columbus","CGY":"Calgary","CHI":"Chicago","DAL":"Dallas","DET":"Detroit","EDM":"Edmonton","FLA":"Florida","LAK":"Los Angeles","MIN":"Minnesota","MTL":"Montreal","NJD":"New Jersey","NSH":"Nashville","NYI":"NY Islanders","NYR":"NY Rangers","OTT":"Ottawa","PHI":"Philadelphia","PIT":"Pittsburgh","QUE":"Quebec","SEA":"Seattle","SJS":"San Jose","STL":"St. Louis","TBL":"Tampa Bay","TOR":"Toronto","UTA":"Utah","VAN":"Vancouver","VGK":"Vegas","WPG":"Winnipeg","WSH":"Washington"},"home":"CHI","events":[],"rows":[],"teams":[{"code":"ANA"},{"code":"BOS"},{"code":"BUF"},{"code":"CAR"},{"code":"CBJ"},{"code":"CGY"},{"code":"CHI"},{"code":"DAL"},{"code":"DET"},{"code":"EDM"},{"code":"FLA"},{"code":"LAK"},{"code":"MIN"},{"code":"MTL"},{"code":"NJD"},{"code":"NSH"},{"code":"NYI"},{"code":"NYR"},{"code":"OTT"},{"code":"PHI"},{"code":"PIT"},{"code":"QUE"},{"code":"SEA"},{"code":"SJS"},{"code":"STL"},{"code":"TBL"},{"code":"TOR"},{"code":"UTA"},{"code":"VAN"},{"code":"VGK"},{"code":"WPG"},{"code":"WSH"}],"built":"2026-11-12"}</script>
+<script>
+(function () {
+  'use strict';
+
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+  const D = JSON.parse($('data').textContent);
+  const fmtDate = (iso) => new Date(iso + 'T12:00:00').toLocaleDateString('en-CA', {year: 'numeric', month: 'short', day: 'numeric'});
+  const money = (x) => { if (x == null) return ''; const a = Math.abs(x), s = x < 0 ? '−' : ''; return a >= 1e6 ? s + '$' + (a / 1e6).toFixed(a % 1e5 ? (a % 1e4 ? 3 : 2) : 1).replace(/(\.\d*?[1-9])0+$/, '$1') + 'M' : s + '$' + Math.round(a / 1000) + 'K'; };
+  const mil = (x) => (x < 0 ? '−' : '') + '$' + (Math.abs(x) / 1e6).toFixed(1) + 'M';
+  const signed = (x, d) => (x > 0 ? '+' : x < 0 ? '−' : '') + Math.abs(x).toLocaleString('en-CA', {minimumFractionDigits: d || 0, maximumFractionDigits: d || 0});
+  const cls = (x) => x > 0 ? 'up' : x < 0 ? 'down' : 'soft';
+  const gradeCls = (g) => 'g-' + (g ? g[0].toLowerCase() : 'x');
+  { const nav = document.querySelector('.nav'), cur = nav && nav.querySelector('[aria-current]'); if (cur) nav.scrollLeft = Math.max(0, cur.offsetLeft - nav.offsetLeft - 60); }  // keep the open tab in view on a phone
+  $('as-of') && ($('as-of').textContent = fmtDate(D.asOf));
+  $('built') && ($('built').textContent = fmtDate(D.built));
+  // The picked team lives in the address bar as #CHI, so a team's view can be shared.
+  const HOME = D.home;
+  const teamCodes = new Set((D.teams || []).map((t) => t.code || t.team));
+  const hashTeam = () => { const h = (location.hash || '').slice(1).toUpperCase(); return teamCodes.has(h) ? h : null; };
+  const setHashTeam = (code) => history.replaceState(null, '', '#' + code);
+  function fillTeams(sel, picked, names) {
+    sel.innerHTML = [...teamCodes].sort().map((c) => `<option value="${c}"${c === picked ? ' selected' : ''}>${c} · ${esc(names[c] || c)}</option>`).join('');
+  }
+  // Click a header to sort; data-k names the row field, data-d its first direction.
+  function sortable(table, state, draw) {
+    const heads = [...table.querySelectorAll('th[data-k]')];
+    const mark = () => heads.forEach((th) => { th.classList.add('sortable'); th.setAttribute('aria-sort', th.dataset.k === state.k ? (state.d > 0 ? 'ascending' : 'descending') : 'none'); });
+    heads.forEach((th) => { th.tabIndex = 0; const go = () => { const k = th.dataset.k; state.d = state.k === k ? -state.d : (th.dataset.d === 'asc' ? 1 : -1); state.k = k; mark(); draw(); };
+      th.addEventListener('click', go); th.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }); });
+    mark();
+  }
+  const by = (state) => (a, b) => { const x = a[state.k], y = b[state.k]; return (typeof x === 'string' || typeof y === 'string' ? String(x).localeCompare(String(y)) : (x == null ? -1e99 : x) - (y == null ? -1e99 : y)) * state.d; };
+  // One tooltip per chart: show(html, evt) follows the pointer inside the chart box.
+  function tooltip(box) {
+    const tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; box.appendChild(tip);
+    return { show(html, e) { tip.innerHTML = html; tip.hidden = false; const r = box.getBoundingClientRect(); let x = e.clientX - r.left + 12, y = e.clientY - r.top + 12;
+        if (x + tip.offsetWidth > r.width) x = Math.max(0, e.clientX - r.left - tip.offsetWidth - 12); tip.style.left = x + 'px'; tip.style.top = y + 'px'; }, hide() { tip.hidden = true; } };
+  }
+
+  if (!D.events.length) {  // a new league, before its first tick
+    $('teams').innerHTML = '<p class="empty">No rating has moved yet. The first monthly tick comes on November 2.</p>';
+    $('players').hidden = true; document.querySelector('header .tools').style.display = 'none'; return;
+  }
+  const F = ['e', 't', 'id', 'n', 'pos', 'age', 'c', 'a', 'd', 'p', 'm', 'was'];
+  const TIERS = ['Franchise', 'Elite', 'Top 6 F', 'Top 4 D', 'Starter', 'Top 9 F', 'Top 6 D', 'Mid Starter', '4th line', '7th D', 'Backup', 'Depth', 'Minor', 'Semipro', 'Amateur'];
+  const R = D.rows.map((r) => { const o = {}; F.forEach((k, i) => { o[k] = r[i]; }); o.pi = TIERS.indexOf(o.p); return o; });
+  const label = (e) => e.kind === 'summer' ? 'Summer ' + e.day.slice(0, 4) : fmtDate(e.day);
+  const seasons = [...new Set(D.events.map((e) => e.season))];
+  const options = [];
+  seasons.slice().reverse().forEach((s) => {
+    const ev = D.events.filter((e) => e.season === s).reverse();
+    options.push({v: 's:' + s, text: s + ', all of it', ids: ev.map((e) => e.id)});
+    ev.forEach((e) => options.push({v: e.id, text: '  ' + label(e), ids: [e.id]}));
+  });
+  const latest = D.events[D.events.length - 1];
+  $('when').innerHTML = options.map((o) => `<option value="${o.v}"${latest && o.v === latest.id ? ' selected' : ''}>${o.text}</option>`).join('');
+  let team = hashTeam() || '';
+  $('t-pick').innerHTML = '<option value="">All teams</option>' + D.teams.map((t) => `<option value="${t.code}"${t.code === team ? ' selected' : ''}>${t.code} · ${esc(D.names[t.code] || t.code)}</option>`).join('');
+
+  // One row per player for the chosen span: changes added up, first rating to last.
+  let rows = [];
+  function collect() {
+    const opt = options.find((o) => o.v === $('when').value) || options[0];
+    if (!opt) { rows = []; return; }
+    const order = Object.fromEntries(D.events.map((e, i) => [e.id, i])), ids = new Set(opt.ids), m = new Map();
+    R.filter((r) => ids.has(r.e)).sort((a, b) => order[a.e] - order[b.e]).forEach((r) => {
+      const k = r.id, o = m.get(k);
+      if (!o) m.set(k, Object.assign({}, r, {from: r.a - r.d}));
+      else Object.assign(o, {a: r.a, d: o.d + r.d, t: r.t, c: r.c, age: r.age, p: r.p, pi: r.pi, m: r.m, was: r.was || o.was});
+    });
+    rows = [...m.values()].filter((r) => r.d !== 0);
+  }
+
+  const ts = {k: 'pts', d: -1};
+  function drawTeams() {
+    const g = {};
+    D.teams.forEach((t) => { g[t.code] = {code: t.code, pts: 0, n: 0, nhl: 0, rest: 0, top: null}; });
+    rows.forEach((r) => { const t = g[r.t]; if (!t) return; t.pts += r.d; t.n += 1; if (r.c === 'NHL') t.nhl += r.d; else t.rest += r.d;
+      if (!t.top || r.d > t.top.d || (r.d === t.top.d && r.a > t.top.a)) t.top = r; });
+    const list = Object.values(g).sort(by(ts)), max = Math.max(1, ...list.map((t) => t.pts));
+    $('team-table').tBodies[0].innerHTML = list.map((t) => `<tr class="pick${t.code === team ? ' me' : ''}" data-team="${t.code}" tabindex="0">
+      <td><b>${t.code}</b> <span class="soft wide">${esc(D.names[t.code] || '')}</span></td><td class="num"><b>${signed(t.pts)}</b></td>
+      <td class="bar sec"><span class="meter"><i class="blue" style="width:${Math.max(0, 100 * t.pts / max).toFixed(1)}%"></i></span></td>
+      <td class="num">${t.n}</td><td class="num sec">${signed(t.nhl)}</td><td class="num sec">${signed(t.rest)}</td>
+      <td class="sec">${t.top ? `${esc(t.top.n)} <span class="soft">${t.top.from}<span class="arrow"> → </span>${t.top.a}</span>` : ''}</td></tr>`).join('');
+    const tot = rows.reduce((s, r) => s + r.d, 0);
+    $('teams-note').textContent = `${rows.length.toLocaleString('en-CA')} players moved, ${signed(tot)} points in all. Click a team to see its players.`;
+  }
+  sortable($('team-table'), ts, drawTeams);
+
+  const ps = {k: 'd', d: -1}, LIMIT = 400;
+  function drawPlayers() {
+    const q = $('q').value.trim().toLowerCase();
+    const list = rows.filter((r) => (!team || r.t === team) && (!q || r.n.toLowerCase().includes(q))).sort((a, b) => by(ps)(a, b) || b.a - a.a || a.n.localeCompare(b.n));
+    $('players-note').textContent = list.length > LIMIT ? `Showing ${LIMIT} of ${list.length.toLocaleString('en-CA')}. Pick a team or search to narrow it.` : `${list.length.toLocaleString('en-CA')} players`;
+    $('player-table').tBodies[0].innerHTML = list.slice(0, LIMIT).map((r) => `<tr><td><b>${esc(r.n)}</b></td><td>${r.t}</td><td class="sec">${esc(r.c) || '<span class="soft">–</span>'}</td><td class="sec">${r.pos}</td>
+      <td class="num">${r.age}</td><td class="num"><span class="soft">${r.from}<span class="arrow"> → </span></span><b>${r.a}</b></td><td class="num ${cls(r.d)}"><b>${signed(r.d)}</b></td>
+      <td class="sec"><span class="pot m${r.m}">${esc(r.p)}</span>${r.was ? ` <span class="was">was ${esc(r.was)}</span>` : ''}</td></tr>`).join('') ||
+      '<tr><td colspan="8" class="empty">Nobody moved.</td></tr>';
+  }
+  sortable($('player-table'), ps, drawPlayers);
+
+  function drawAll() { collect(); drawTeams(); drawPlayers(); }
+  function pick(code) { team = code; $('t-pick').value = code; history.replaceState(null, '', code ? '#' + code : location.pathname + location.search); drawTeams(); drawPlayers(); }
+  $('when').addEventListener('change', drawAll);
+  $('t-pick').addEventListener('change', (e) => pick(e.target.value));
+  $('q').addEventListener('input', drawPlayers);
+  const pickRow = (e) => { const tr = e.target.closest('tr[data-team]'); if (tr) { pick(tr.dataset.team === team ? '' : tr.dataset.team); $('players').scrollIntoView({behavior: 'smooth'}); } };
+  $('team-table').addEventListener('click', pickRow);
+  $('team-table').addEventListener('keydown', (e) => { if (e.key === 'Enter') pickRow(e); });
+  addEventListener('hashchange', () => { const c = hashTeam() || ''; if (c !== team) pick(c); });
+  drawAll();
+
+})();
+</script>
+</body>
+</html>
