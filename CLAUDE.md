@@ -4,7 +4,7 @@ Zachary is GM of the Chicago Blackhawks (CHI) in the FCHL, an online Hockey Lega
 
 Zachary is a developer. Keep answers short and decision-ready. The page is public to the whole league: only league-wide facts any GM could look up in the game go on it. Chicago's plans and notes live in Zachary's private workspace, not here.
 
-Status: first published Nov 12, 2026 and rebuilt the same day from the four saves through Nov 2, 2026 (repo github.com/ZacharyMichaud/fchl-hml27; Pages serves the `main` branch). Rebuilt Nov 13, 2026 to show the overall the game shows, with the temporary streak or injury modifier (see Ratings in the PHL file); five players in NHL organizations carry one on the Nov 2 save. Rebuilt again the same day so Team value prices rating changes (see Team value).
+Status: first published Nov 12, 2026 and rebuilt the same day from the four saves through Nov 2, 2026 (repo github.com/ZacharyMichaud/fchl-hml27; Pages serves the `main` branch). Rebuilt Nov 13, 2026 to show the overall the game shows, with the temporary streak or injury modifier (see Ratings in the PHL file); five players in NHL organizations carry one on the Nov 2 save. Rebuilt again the same day so Team value prices rating changes (see Team value). Rebuilt Nov 15, 2026 on the Dec 2, 2026 save.
 
 ## How it relates to the PHL site
 
@@ -34,15 +34,15 @@ Status: first published Nov 12, 2026 and rebuilt the same day from the four save
    - A `CHECK:` line is a move entered like a waiver claim or an offer sheet. Ask Zachary which it was and add its ids to the matching list in `league.py`.
    - A new "combined" group in the output needs the same question (see Trades).
 
-From the four saves through Nov 2, 2026 the build gives 3 combined deals, 80 deals and 161 ledger rows; 32 teams over 1 period; 1,518 contracts through 2034-35; 229 games played and 1,115 to play; 614 skaters and 65 goalies in the NHL, 1,349 players in other leagues and 2 tables, with goals matching the standings for 32 of 32 teams; 469 rating changes over 1 monthly tick. No `CHECK:` lines.
+From the five saves through Dec 2, 2026 the build gives 4 combined deals, 91 deals and 183 ledger rows; 32 teams over 1 period; 1,520 contracts through 2034-35; 455 games played and 889 to play; 639 skaters and 67 goalies in the NHL, 1,411 players in other leagues and 2 tables, with goals matching the standings for 32 of 32 teams; 838 rating changes over 2 monthly ticks. No `CHECK:` lines.
 
 ## Trades
 
-- 84 trades. #3832 to #3907 are all dated Sept 1, 2026: the league dealt through the whole preseason on one game day. The first save holds #3832 to #3857, the second up to #3906, the Oct 6 save adds #3907. #3908 to #3915 are dated Oct 6, 2026 and first appear in the Nov 2 save; none of them combine.
+- 96 trades. #3832 to #3907 are all dated Sept 1, 2026: the league dealt through the whole preseason on one game day. The first save holds #3832 to #3857, the second up to #3906, the Oct 6 save adds #3907. #3908 to #3915 are dated Oct 6, 2026 and first appear in the Nov 2 save; none of them combine. #3916 to #3927 are dated Nov 2, 2026 and first appear in the Dec 2 save.
 - The same-day rule (same two teams, one part at 5 assets) therefore also catches deals made weeks apart. Until Zachary says otherwise, only back-to-back trade numbers count as one deal:
-  - Combined: BUF–SJS 3832+3833 (Celebrini), PIT–WPG 3849+3850+3851 (Connor; T. Hayes rides on a 7th-round swap that is swapped straight back) and NSH–QUE 3896+3897 (Marchment for Marchessault, with a swap of 2028 1sts).
+  - Combined: BUF–SJS 3832+3833 (Celebrini), PIT–WPG 3849+3850+3851 (Connor; T. Hayes rides on a 7th-round swap that is swapped straight back) and NSH–QUE 3896+3897 (Marchment for Marchessault, with a swap of 2028 1sts). NJD–DET 3926+3927 (Nov 2, 2026): Faulk to New Jersey, Detroit keeping half his salary, for Gashilov, Rodrigues and three 3rds, then all of it back the same day with a different set of 3rds; one deal, confirmed by Zachary Nov 15, 2026.
   - Left split (`KEEP_SEPARATE`, by the later trade): SJS–PHI 3881 (Bunting), CHI–SJS 3872 (Comrie), QUE–PHI 3882 (Moser), QUE–VGK 3885 (Burns), QUE–SEA 3886 (Landeskog), NSH–VGK 3901 (O'Reilly), NSH–QUE 3903 (Josi).
-- `CHECKED_TRADES` holds 3850, 3851 and 3903: flagged as claim-like (a pick goes out and comes back), kept as trades.
+- `CHECKED_TRADES` holds 3850, 3851, 3903, 3926 and 3927: flagged as claim-like (a pick goes out and comes back), kept as trades.
 - No waiver claims or offer sheets yet. One three-team trade: #3869 (QUE, NYR, with NJD keeping half of Svechkov's salary).
 - Player values in the Sept 1 saves are live in this league (2,124 of 2,174 NHL-owned players carry one, and they agree across the two saves), unlike the PHL's opening save, so nothing is marked stale. All three saves hold pick values.
 

@@ -36,4 +36,6 @@ OFFER_SHEETS = set()
 # Entries the build flagged with a CHECK line that turned out to be real trades.
 # PIT-WPG 3850 and 3851: T. Hayes rides with the Connor trade (3849, already at 5 assets) on a 7th-round swap
 # that is swapped straight back. NSH-QUE 3903: the Josi trade returns the 2027 3rd that 3896 sent.
-CHECKED_TRADES = {"3850", "3851", "3903"}
+# NJD-DET 3926 and 3927 (Nov 2, 2026): Faulk to New Jersey for Gashilov, Rodrigues and three 3rds, then all of it
+# back the same day with a different set of 3rds; graded as one deal (confirmed by Zachary, Nov 15, 2026).
+CHECKED_TRADES = {"3850", "3851", "3903", "3926", "3927"}
