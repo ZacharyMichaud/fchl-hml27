@@ -27,8 +27,8 @@ GM_NAMES = {}
 # apart. Until Zachary says otherwise, only back-to-back trade numbers count as one deal: BUF-SJS 3832+3833
 # (Celebrini), PIT-WPG 3849+3850+3851 (Connor) and NSH-QUE 3896+3897. Left split, by their later trade: SJS-PHI
 # 3881 (Bunting), CHI-SJS 3872 (Comrie), QUE-PHI 3882 (Moser), QUE-VGK 3885 (Burns), QUE-SEA 3886 (Landeskog),
-# NSH-VGK 3901 (O'Reilly) and NSH-QUE 3903 (Josi).
-KEEP_SEPARATE = {"3881", "3872", "3882", "3885", "3886", "3901", "3903"}
+# NSH-VGK 3901 (O'Reilly), NSH-QUE 3903 (Josi) and NYI-NSH 3932 (Dowd for Stjernberg is 3931; Zachary, Nov 17, 2026).
+KEEP_SEPARATE = {"3881", "3872", "3882", "3885", "3886", "3901", "3903", "3932"}
 EXTRA_MERGES = [("3896", "3897")]
 # Moves entered in the game as trades that are not trades, so they are left out.
 WAIVER_CLAIMS = set()
