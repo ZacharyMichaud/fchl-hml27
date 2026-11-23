@@ -28,8 +28,11 @@ GM_NAMES = {}
 # (Celebrini), PIT-WPG 3849+3850+3851 (Connor) and NSH-QUE 3896+3897. Left split, by their later trade: SJS-PHI
 # 3881 (Bunting), CHI-SJS 3872 (Comrie), QUE-PHI 3882 (Moser), QUE-VGK 3885 (Burns), QUE-SEA 3886 (Landeskog),
 # NSH-VGK 3901 (O'Reilly), NSH-QUE 3903 (Josi) and NYI-NSH 3932 (Dowd for Stjernberg is 3931; Zachary, Nov 17, 2026).
-KEEP_SEPARATE = {"3881", "3872", "3882", "3885", "3886", "3901", "3903", "3932"}
-EXTRA_MERGES = [("3896", "3897")]
+# Deadline day, Feb 28, 2027: WSH-EDM 3950+3951 (Hutson and Leonard) combine by the rule. WSH-DET 3954+3955
+# (Wallinder, Seider) are back-to-back and combine; 3957 (Gibson for Nedeljkovic) comes after PIT-VGK 3956, so it
+# stays split (pending Zachary's call, Nov 22, 2026).
+KEEP_SEPARATE = {"3881", "3872", "3882", "3885", "3886", "3901", "3903", "3932", "3957"}
+EXTRA_MERGES = [("3896", "3897"), ("3954", "3955")]
 # Moves entered in the game as trades that are not trades, so they are left out.
 WAIVER_CLAIMS = set()
 OFFER_SHEETS = set()
